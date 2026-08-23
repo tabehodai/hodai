@@ -16,8 +16,10 @@ dormant, zero public repos) since 2016-09, and GitHub does not release
 dormant names without a trademark claim. The domain tabehod.ai was
 available, and tabehodai (食べ放題, "all you can eat") is a real
 standalone Japanese word where bare hodai was a constructed suffix. The
-project, org, and domain are tabehodai / github.com/tabehodai /
-tabehod.ai. The CLI binary and the npm and PyPI package names stay
+project, org, domain, and repository are tabehodai / github.com/tabehodai
+/ tabehod.ai / tabehodai/hodai. The repository takes the artifact's name,
+not the project's, because people who meet the hodai command search for
+"hodai github", and it avoids the tabehodai/tabehodai stutter. The CLI binary and the npm and PyPI package names stay
 hodai (short to type; npm hodai confirmed unregistered 2026-08-23).
 hodai.io and hodai.net redirect to tabehod.ai. Pronunciation:
 "tah-beh-hoe-DYE".
