@@ -2,7 +2,7 @@
 
 Date: 2026-08-23. Status: accepted.
 
-hodai is open source under Apache-2.0 and self-hostable: anyone can run
+tabehodai is open source under Apache-2.0 and self-hostable: anyone can run
 their own instance and their own cohort. Consequences:
 
 - No operator identity in code. One operator config (name, provider
@@ -10,7 +10,7 @@ their own instance and their own cohort. Consequences:
   instance.
 - GPU providers stay behind SkyPilot. Payments start with Stripe behind a
   thin interface in `control/`, not woven through it.
-- Monitoring is bring-your-own: hodai ships /metrics endpoints, Grafana
+- Monitoring is bring-your-own: tabehodai ships /metrics endpoints, Grafana
   dashboard JSON, and alert rules as data. It ships no Prometheus,
   Grafana, or alert delivery.
 - The license is decided before outside contributions exist, because

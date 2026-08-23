@@ -15,7 +15,7 @@ encrypted per-key KV cache backend. `bench/` and `evals/` hold the
 capacity and model evidence. Design history lives in `docs/`.
 
 Operators configure an instance; the code carries no operator identity.
-Monitoring is bring-your-own Prometheus: hodai ships metrics endpoints,
+Monitoring is bring-your-own Prometheus: tabehodai ships metrics endpoints,
 dashboards, and alert rules as data (`monitoring/`), not a stack.
 
 Status (2026-08-23): pre-scaffold. The design draft and its adversarial
