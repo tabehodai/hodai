@@ -1,10 +1,11 @@
-# hodai
+# tabehodai
 
-Unmetered agentic coding usage. hodai (放題, "all you can") is cohort
-infrastructure: a group pools a monthly payment, the pool rents GPU
+Unmetered agentic coding usage. tabehodai (食べ放題, "all you can eat") is
+cohort infrastructure: a group pools a monthly payment, the pool rents GPU
 capacity serving open-weight coding models, and each member gets an API
-key with concurrent session slots. Anyone can host hodai, run their own
-cohort, and set their own terms. Pronounced "hoe-DYE".
+key with concurrent session slots. Anyone can host tabehodai, run their own
+cohort, and set their own terms. Pronounced "tah-beh-hoe-DYE". The CLI
+and package name stay `hodai`.
 
 The system has four planes: `runner/` rents and serves GPU pods,
 `gateway/` enforces keys, slots, and token budgets on the inference path,
