@@ -23,3 +23,10 @@ not the project's, because people who meet the hodai command search for
 hodai (short to type; npm hodai confirmed unregistered 2026-08-23).
 hodai.io and hodai.net redirect to tabehod.ai. Pronunciation:
 "tah-beh-hoe-DYE".
+
+Amendment, 2026-08-24, romanization. The word is 食べ放題, Hepburn
+tabehōdai, kana-faithful typing tabehoudai. The project spells it
+tabehodai, dropping the long-vowel marker the way Tokyo drops it from
+Tōkyō and judo from jūdō. The macron-dropped form is what makes
+tabehod.ai parse as the word and keeps the CLI name at hodai. Docs may
+note the full form once (tabehōdai) where the word is introduced.
