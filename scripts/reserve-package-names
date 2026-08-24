@@ -1,0 +1,69 @@
+#!/usr/bin/env bash
+# Reserve the hodai and tabehodai names on npm and PyPI with minimal
+# functional placeholders (a stub CLI that prints the project URL).
+# Idempotent: skips any name that already exists on the registry.
+#
+# Prereqs:
+#   npm:  npm login   (npm whoami must succeed)
+#   pypi: uv tool install twine (or pipx install twine, or pip install twine/build)
+#         export TWINE_USERNAME=__token__
+#         export TWINE_PASSWORD=pypi-...   (account-scoped token; per-project after first publish)
+set -euo pipefail
+URL=https://github.com/tabehodai/hodai
+VER=0.0.1
+DESC="Unmetered agentic coding usage. Placeholder release reserving the name for the tabehodai project."
+work=$(mktemp -d); trap 'rm -rf "$work"' EXIT
+
+npm_reserve() {
+  local name=$1
+  if npm view "$name" version >/dev/null 2>&1; then
+    echo "npm: $name already published, skipping"; return
+  fi
+  local d="$work/npm-$name"; mkdir -p "$d"
+  cat > "$d/package.json" <<J
+{"name":"$name","version":"$VER","description":"$DESC","bin":{"$name":"cli.js"},
+ "repository":{"type":"git","url":"git+$URL.git"},"homepage":"$URL","license":"Apache-2.0"}
+J
+  printf '#!/usr/bin/env node\nconsole.log("%s: placeholder. See %s");\n' "$name" "$URL" > "$d/cli.js"
+  printf '# %s\n\n%s\n\n%s\n' "$name" "$DESC" "$URL" > "$d/README.md"
+  (cd "$d" && npm publish --access public)
+  echo "npm: published $name@$VER"
+}
+
+pypi_reserve() {
+  local name=$1
+  if curl -fsS "https://pypi.org/pypi/$name/json" >/dev/null 2>&1; then
+    echo "pypi: $name already published, skipping"; return
+  fi
+  local d="$work/pypi-$name"; mkdir -p "$d/src/${name}"
+  cat > "$d/pyproject.toml" <<T
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+[project]
+name = "$name"
+version = "$VER"
+description = "$DESC"
+readme = "README.md"
+license = {text = "Apache-2.0"}
+urls = {Homepage = "$URL"}
+[project.scripts]
+$name = "$name:main"
+T
+  printf 'def main() -> None:\n    print("%s: placeholder. See %s")\n' "$name" "$URL" > "$d/src/${name}/__init__.py"
+  printf '# %s\n\n%s\n\n%s\n' "$name" "$DESC" "$URL" > "$d/README.md"
+  (cd "$d" && python3 -m build --sdist --wheel >/dev/null && twine upload dist/*)
+  echo "pypi: published $name==$VER"
+}
+
+command -v npm >/dev/null || { echo "npm missing"; exit 1; }
+npm whoami >/dev/null 2>&1 || { echo "run: npm login   (then re-run)"; exit 1; }
+for n in hodai tabehodai; do npm_reserve "$n"; done
+
+if [[ "${TWINE_PASSWORD:-}" == pypi-* ]]; then
+  command -v twine >/dev/null || { echo "twine missing: pipx install twine build"; exit 1; }
+  python3 -c 'import build' 2>/dev/null || { echo "python build module missing: pipx inject or pip install build"; exit 1; }
+  for n in hodai tabehodai; do pypi_reserve "$n"; done
+else
+  echo "pypi: TWINE_PASSWORD not set to a pypi- token; skipped (npm done)"
+fi
