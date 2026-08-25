@@ -1,216 +1,527 @@
 <!doctype html>
 <html lang="en">
-  <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta
-      name="description"
-      content="tabehodai is self-hostable cohort infrastructure for unmetered access to open-weight coding models."
-    >
-    <title>tabehodai</title>
-    <style>
-      :root {
-        color-scheme: light dark;
-        --background: #f5f0e8;
-        --surface: rgba(255, 255, 255, 0.72);
-        --text: #241f1a;
-        --muted: #665e55;
-        --accent: #b54225;
-        --accent-text: #ffffff;
-        --border: rgba(36, 31, 26, 0.16);
-        --shadow: 0 24px 70px rgba(65, 43, 26, 0.12);
-      }
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <meta
+            name="description"
+            content="tabehodai: a 50-person cohort rents one GPU node and runs open-weight coding models on it. Flat price, no per-token billing."
+        />
+        <title>tabehodai</title>
+        <style>
+            :root {
+                color-scheme: light dark;
+                --bg: #ebe7e4;
+                --bg-deep: #dacbc2;
+                --text: #252f3d;
+                --muted: #5c5752;
+                --accent: #4b607c;
+                --rust: #844f3b;
+                --line: rgba(139, 132, 125, 0.4);
+                --line-strong: rgba(92, 87, 82, 0.3);
+                --serif:
+                    "Plantin MT Pro", Plantin, "Iowan Old Style",
+                    "Palatino Linotype", Palatino, Georgia, serif;
+                --mono:
+                    "Commit Mono", "Departure Mono", ui-monospace, "SF Mono",
+                    Menlo, Consolas, monospace;
+            }
 
-      @media (prefers-color-scheme: dark) {
-        :root {
-          --background: #151311;
-          --surface: rgba(35, 31, 28, 0.78);
-          --text: #f5efe6;
-          --muted: #bcb1a5;
-          --accent: #ef7957;
-          --accent-text: #1d100b;
-          --border: rgba(245, 239, 230, 0.16);
-          --shadow: 0 24px 70px rgba(0, 0, 0, 0.35);
-        }
-      }
+            @media (prefers-color-scheme: dark) {
+                :root {
+                    --bg: #161d27;
+                    --bg-deep: #0d1116;
+                    --text: #d5d8db;
+                    --muted: #9fa4ab;
+                    --accent: #6a9fcc;
+                    --rust: #b86b52;
+                    --line: rgba(73, 80, 89, 0.6);
+                    --line-strong: rgba(117, 125, 137, 0.5);
+                }
+            }
 
-      * {
-        box-sizing: border-box;
-      }
+            * {
+                box-sizing: border-box;
+            }
 
-      body {
-        min-height: 100vh;
-        margin: 0;
-        color: var(--text);
-        background:
-          radial-gradient(circle at 15% 10%, color-mix(in srgb, var(--accent) 14%, transparent), transparent 32rem),
-          var(--background);
-        font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-        line-height: 1.6;
-      }
+            body {
+                margin: 0;
+                color: var(--text);
+                background: var(--bg);
+                font-family: var(--serif);
+                font-size: 1.08rem;
+                font-weight: 450;
+                line-height: 1.5;
+            }
 
-      main {
-        width: min(70rem, calc(100% - 2rem));
-        margin: 0 auto;
-        padding: clamp(3.5rem, 10vw, 8rem) 0 3rem;
-      }
+            main {
+                width: min(46rem, calc(100% - 2.5rem));
+                margin: 0 auto;
+                padding: clamp(3rem, 8vw, 6rem) 0 4rem;
+            }
 
-      .hero {
-        max-width: 52rem;
-      }
+            .mono {
+                font-family: var(--mono);
+                font-size: 0.84rem;
+                letter-spacing: 0.02em;
+            }
 
-      .wordmark {
-        display: flex;
-        align-items: baseline;
-        gap: 0.8rem;
-        margin: 0;
-        font-size: clamp(3.4rem, 11vw, 7.8rem);
-        font-weight: 750;
-        letter-spacing: -0.075em;
-        line-height: 0.9;
-      }
+            header {
+                padding-bottom: 2rem;
+                border-bottom: 1px solid var(--line);
+            }
 
-      .wordmark span {
-        color: var(--accent);
-        font-size: clamp(1rem, 3vw, 1.8rem);
-        font-weight: 650;
-        letter-spacing: 0.08em;
-      }
+            .kicker {
+                margin: 0 0 1.5rem;
+                color: var(--muted);
+            }
 
-      .pitch {
-        max-width: 47rem;
-        margin: 2.2rem 0 0;
-        color: var(--muted);
-        font-size: clamp(1.1rem, 2.2vw, 1.4rem);
-      }
+            h1 {
+                margin: 0;
+                font-size: clamp(2.6rem, 8vw, 4.4rem);
+                font-weight: 500;
+                letter-spacing: -0.02em;
+                line-height: 1.05;
+            }
 
-      .features {
-        display: grid;
-        grid-template-columns: repeat(3, 1fr);
-        gap: 1rem;
-        margin-top: clamp(3.5rem, 8vw, 6rem);
-      }
+            h1 span {
+                display: block;
+                margin-top: 0.3rem;
+                color: var(--accent);
+                font-size: 0.42em;
+                font-weight: 450;
+                letter-spacing: 0.02em;
+            }
 
-      article {
-        min-height: 13rem;
-        padding: 1.5rem;
-        border: 1px solid var(--border);
-        border-radius: 1.2rem;
-        background: var(--surface);
-        box-shadow: var(--shadow);
-        backdrop-filter: blur(12px);
-      }
+            .pitch {
+                max-width: 36rem;
+                margin: 1.6rem 0 0;
+                font-size: 1.22rem;
+            }
 
-      .number {
-        color: var(--accent);
-        font-size: 0.78rem;
-        font-weight: 700;
-        letter-spacing: 0.12em;
-      }
+            section {
+                padding: 2.4rem 0;
+                border-bottom: 1px solid var(--line);
+            }
 
-      h2 {
-        margin: 2rem 0 0.7rem;
-        font-size: 1.15rem;
-        line-height: 1.25;
-      }
+            h2 {
+                margin: 0 0 1rem;
+                color: var(--accent);
+                font-family: var(--mono);
+                font-size: 0.84rem;
+                font-weight: 500;
+                letter-spacing: 0.06em;
+                text-transform: uppercase;
+            }
 
-      article p {
-        margin: 0;
-        color: var(--muted);
-      }
+            h2::before {
+                content: "# ";
+                color: var(--muted);
+            }
 
-      footer {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        gap: 1.5rem;
-        margin-top: 2.5rem;
-        color: var(--muted);
-        font-size: 0.9rem;
-      }
+            p {
+                margin: 0 0 1rem;
+            }
 
-      .github-link {
-        display: inline-flex;
-        align-items: center;
-        min-height: 2.8rem;
-        padding: 0.65rem 1rem;
-        border-radius: 999px;
-        color: var(--accent-text);
-        background: var(--accent);
-        font-weight: 700;
-        text-decoration: none;
-      }
+            p:last-child {
+                margin-bottom: 0;
+            }
 
-      .github-link:hover {
-        text-decoration: underline;
-        text-underline-offset: 0.2em;
-      }
+            table {
+                width: 100%;
+                margin: 1.2rem 0;
+                border-collapse: collapse;
+                font-family: var(--mono);
+                font-size: 0.84rem;
+            }
 
-      .github-link:focus-visible {
-        outline: 3px solid var(--text);
-        outline-offset: 3px;
-      }
+            th,
+            td {
+                padding: 0.45rem 0.6rem 0.45rem 0;
+                border-bottom: 1px solid var(--line);
+                text-align: left;
+                vertical-align: top;
+            }
 
-      @media (max-width: 48rem) {
-        main {
-          padding-top: 3.5rem;
-        }
+            th {
+                color: var(--muted);
+                font-weight: 500;
+            }
 
-        .wordmark {
-          align-items: flex-start;
-          flex-direction: column;
-          gap: 1rem;
-        }
+            td.n,
+            th.n {
+                text-align: right;
+                padding-right: 0;
+                white-space: nowrap;
+            }
 
-        .features {
-          grid-template-columns: 1fr;
-        }
+            .table-wrap {
+                overflow-x: auto;
+            }
 
-        article {
-          min-height: 0;
-        }
+            .math {
+                margin: 1.2rem 0;
+                padding: 1rem 1.2rem;
+                border: 1px solid var(--line-strong);
+                background: var(--bg-deep);
+                font-family: var(--mono);
+                font-size: 0.84rem;
+                line-height: 1.7;
+                overflow-x: auto;
+                white-space: pre;
+            }
 
-        footer {
-          align-items: flex-start;
-          flex-direction: column-reverse;
-        }
-      }
-    </style>
-  </head>
-  <body>
-    <main>
-      <section class="hero" aria-labelledby="site-title">
-        <h1 class="wordmark" id="site-title">
-          tabehodai
-          <span lang="ja">食べ放題</span>
-        </h1>
-        <p class="pitch">
-          A cohort pools a flat monthly payment and rents a GPU cluster that serves open-weight coding models. Each member gets an API key with concurrent session slots. Anyone can host a cohort.
-        </p>
-      </section>
+            .math b {
+                color: var(--accent);
+                font-weight: 500;
+            }
 
-      <section class="features" aria-label="Features">
-        <article>
-          <div class="number">01</div>
-          <h2>Self-hostable infrastructure</h2>
-          <p>The stack is defined as auditable infrastructure as code. A cohort can inspect it and run its own deployment.</p>
-        </article>
-        <article>
-          <div class="number">02</div>
-          <h2>Unmetered session slots</h2>
-          <p>Members use assigned concurrent slots. Usage inside a slot is unmetered instead of billed per token.</p>
-        </article>
-        <article>
-          <div class="number">03</div>
-          <h2>Encrypted per-key cache</h2>
-          <p>Each API key gets an encrypted KV cache. Cached context stays separated across members and keys.</p>
-        </article>
-      </section>
+            .note {
+                color: var(--muted);
+                font-size: 0.96rem;
+            }
 
-      <footer>
-        <span>Apache-2.0 licensed.</span>
-        <a class="github-link" href="https://github.com/tabehodai/hodai">View on GitHub</a>
-      </footer>
-    </main>
-  </body>
+            .caveat {
+                padding-left: 1rem;
+                border-left: 2px solid var(--rust);
+                color: var(--muted);
+                font-size: 0.96rem;
+            }
+
+            a {
+                color: var(--accent);
+                text-decoration: underline;
+                text-underline-offset: 0.18em;
+                text-decoration-color: color-mix(
+                    in srgb,
+                    var(--accent) 40%,
+                    transparent
+                );
+            }
+
+            a:hover {
+                text-decoration-color: var(--accent);
+            }
+
+            a:focus-visible {
+                outline: 2px solid var(--accent);
+                outline-offset: 3px;
+            }
+
+            .bracket {
+                display: inline-block;
+                padding: 0.35rem 0.75rem;
+                border: 1px solid var(--line-strong);
+                color: var(--text);
+                font-family: var(--mono);
+                font-size: 0.84rem;
+                text-decoration: none;
+            }
+
+            .bracket::before {
+                content: "[ ";
+                color: var(--muted);
+            }
+
+            .bracket::after {
+                content: " ]";
+                color: var(--muted);
+            }
+
+            .bracket:hover {
+                border-color: var(--accent);
+                color: var(--accent);
+            }
+
+            footer {
+                display: flex;
+                flex-wrap: wrap;
+                align-items: center;
+                justify-content: space-between;
+                gap: 1rem;
+                padding-top: 2rem;
+                color: var(--muted);
+                font-family: var(--mono);
+                font-size: 0.84rem;
+            }
+
+            @media (max-width: 40rem) {
+                body {
+                    font-size: 1.02rem;
+                }
+            }
+        </style>
+    </head>
+    <body>
+        <main>
+            <header>
+                <p class="kicker mono">
+                    tabehod.ai / <span lang="ja">食べ放題</span> / all you can
+                    eat
+                </p>
+                <h1>
+                    Unmetered agentic coding for you and 50 friends.
+                    <span>(I need more friends.)</span>
+                </h1>
+                <p class="pitch">
+                    Pool money with your friends, rent a node, and serve an
+                    open-weight coding model on it. Each member gets an API key
+                    with a minimum guaranteed number of concurrent sessions and
+                    an encrypted prefix cache. The source and the infrastructure
+                    code are public.
+                </p>
+            </header>
+
+            <section>
+                <h2>Models</h2>
+                <div class="table-wrap">
+                    <table>
+                        <tr>
+                            <th>Model</th>
+                            <th>Shape</th>
+                            <th>Hardware</th>
+                            <th class="n">Seat / month</th>
+                        </tr>
+                        <tr>
+                            <td>Kimi K3</td>
+                            <td>2.8T MoE, 104B active, 1M context, MXFP4</td>
+                            <td>1 x 8xB300 (2.3 TB HBM)</td>
+                            <td class="n">$1,000</td>
+                        </tr>
+                        <tr>
+                            <td>Qwen3.8-27B</td>
+                            <td>27B dense, 262k context, FP8, Apache 2.0</td>
+                            <td>1-2 x H200 or B200</td>
+                            <td class="n">$100</td>
+                        </tr>
+                    </table>
+                </div>
+                <p>
+                    K3 is the planner tier. Qwen3.8-27B is the worker tier. Want
+                    another model? Send me a PR to add whatever you (and your
+                    friends) want. Or fork the repo and start your own cohort.
+                </p>
+            </section>
+
+            <section>
+                <h2>"It costs how much?"</h2>
+                <p>
+                    The 1.56 TB K3 checkpoint fits on one commodity node tier.
+                    An 8xB200 node has 1.5 TB of HBM and does not fit. Hopper
+                    nodes fit across four machines but lack native MXFP4 and run
+                    dequantization-bound (16xH200 measured at 16.8 tok/s single
+                    stream).
+                </p>
+                <div class="table-wrap">
+                    <table>
+                        <tr>
+                            <th>Option</th>
+                            <th>Nodes</th>
+                            <th>HBM</th>
+                            <th>Headroom after weights</th>
+                            <th class="n">Spot / month</th>
+                        </tr>
+                        <tr>
+                            <td>8xB300</td>
+                            <td>1</td>
+                            <td>2.3 TB</td>
+                            <td>~740 GB</td>
+                            <td class="n">~$34k</td>
+                        </tr>
+                        <tr>
+                            <td>16xB200</td>
+                            <td>2</td>
+                            <td>3.1 TB</td>
+                            <td>~1.5 TB</td>
+                            <td class="n">~$62k</td>
+                        </tr>
+                        <tr>
+                            <td>32xH100</td>
+                            <td>4</td>
+                            <td>2.6 TB</td>
+                            <td>n/a</td>
+                            <td class="n">~$68k</td>
+                        </tr>
+                        <tr>
+                            <td>32xH200</td>
+                            <td>4</td>
+                            <td>4.5 TB</td>
+                            <td>n/a</td>
+                            <td class="n">~$77k</td>
+                        </tr>
+                    </table>
+                </div>
+                <pre
+                    class="math"
+                ><b>node</b>     8xB300 secure, $7.89/GPU-hr x 8 x 730 h  = $46.1k/mo
+<b>seats</b>    50 x $1,000                              = $50.0k/mo
+<b>fees</b>     Stripe                                   ~ $1.5k/mo
+<b>margin</b>   $50.0k - $46.1k - $1.5k                  ~ $2.4k/mo</pre>
+                <p class="note">
+                    Spot pricing (~$34k) leaves real margin for operating costs
+                    and overhead (cluster spin-up time). Secure on-demand
+                    pricing leaves almost none. The gap closes by pricing at
+                    $1,200, growing the cohort to 60, or landing a reserved
+                    rate.
+                </p>
+            </section>
+
+            <section>
+                <h2>Per seat</h2>
+                <p>
+                    Decode on K3 is bound by memory bandwidth. Past a batch of
+                    about 60, every step touches nearly all 896 experts, so step
+                    cost stops growing with batch size.
+                </p>
+                <pre
+                    class="math"
+                ><b>step floor</b>   ~1.5 TB weights / ~64 TB/s HBM        ~ 25 ms
+<b>per stream</b>   1 / 25 ms                              ~ 30-40 tok/s
+<b>aggregate</b>    2,000 tok/GPU-s x 8 GPUs (vLLM Pareto) ~ 16k tok/s
+<b>per month</b>    16k tok/s x 2.6M s                     ~ 42B output tok
+<b>per seat</b>     42B / 50                               ~ 840M output tok
+<b>list value</b>   840M x $15/MTok                        > $12k</pre>
+                <p>We are constrained by concurrency, not memory.</p>
+            </section>
+
+            <section>
+                <h2>Heavy user consumption</h2>
+                <p>
+                    Target members (me and my friends) have several $200/month
+                    subscriptions and have to juggle them between 5h and 7d
+                    limits. Ain't nobody got time for that.
+                </p>
+                <pre
+                    class="math"
+                ><b>one agent-hour</b>   30 tok/s x 50% duty x 3,600 s     ~ 54k output tok
+                 20:1 input mix                    ~ 1.1M input tok
+                 at 90% cache hit                  ~ $1.40
+                 at 70% cache hit                  ~ $2.30
+<b>one engineer</b>     6-10 agents x 6-8 h x 22 days     ~ 800-1,750 agent-h
+                 x $1.40-2.30                      ~ $1.1k-4k/mo
+<b>fifty of them</b>    50 x 54k x 800-1,750 agent-h      ~ 2-7.5B output tok/mo
+                 against ~42B node capacity        ~ 5-18% utilization</pre>
+                <p>
+                    It isn't totally about saving money. It's about unmetered
+                    usage.
+                </p>
+            </section>
+
+            <section>
+                <h2>Five guaranteed slots</h2>
+                <p>
+                    Most agent wall-clock is tool execution. (You are unit
+                    testing, right?) An agent that is running tests or reading
+                    files holds a session slot but no decode step. Measured duty
+                    is about 30%.
+                </p>
+                <pre
+                    class="math"
+                ><b>knee</b>        aggregate stops scaling at          ~ 200-300 active streams (guess)
+<b>slots</b>       300 streams / 30% duty              ~ 900 open sessions
+<b>per member</b>  900 / 50, with headroom             = 5 published, queue behind
+<b>agents</b>      5 slots / 30% duty                  ~ 8-10 agents kept busy</pre>
+                <p>
+                    Felt latency is time-to-first-token after each tool result,
+                    so the prefix-cache hit rate is the user experience. Rate
+                    limits are per key: a slot semaphore plus a prompt-token
+                    rate, so one member's burst does not evict everyone else's
+                    cache.
+                </p>
+            </section>
+
+            <section>
+                <h2>KV pool bottleneck</h2>
+                <p>
+                    K3 has 93 layers. 69 are linear attention (KDA) with a fixed
+                    ~54 MB state per request and no per-token cache. 24 are
+                    gated MLA with per-token KV. From a 16xH200 report (7.95 GB
+                    pool holding 308,608 tokens):
+                </p>
+                <pre
+                    class="math"
+                ><b>MLA KV</b>       7.95 GB / 308,608 tok                ~ 26 KB/token
+<b>pool</b>         ~740 GB headroom, ~500 GB for KV     ~ 19M resident tokens
+<b>700k session</b> 700k x 26 KB                         ~ 18 GB
+<b>eviction</b>     18 GB over PCIe Gen5 at 50-60 GB/s   ~ 0.3 s to host RAM
+<b>cache miss</b>   whole-node prefill of 700k tokens    ~ 30-90 s</pre>
+                <p>
+                    Resident long contexts are cheap. Evicted ones are ruinous.
+                    So the KV tier writes through to host RAM (8xB300 nodes
+                    carry 2-4 TB) and eviction becomes a storage event, not a
+                    recompute.
+                </p>
+                <p class="caveat">
+                    The 19M figure holds only with data-parallel attention plus
+                    expert parallelism. Tensor-parallel attention replicates MLA
+                    KV across 8 ranks and divides the pool by 8. Three known
+                    inconsistencies remain in the v1 model: 5 slots x 128k
+                    exceeds a 380k per-member budget; a 500 x 48k sweep needs
+                    24M tokens against the 19M pool; the KV size was derived
+                    from BF16 and serving is FP8.
+                </p>
+            </section>
+
+            <section>
+                <h2>$100 tier</h2>
+                <p>
+                    Qwen3.8-27B is dense, so decode reads the whole ~27 GB of
+                    FP8 weights every step. One H200 has ~4.8 TB/s.
+                </p>
+                <pre
+                    class="math"
+                ><b>step floor</b>   27 GB / 4.8 TB/s                     ~ 6 ms
+<b>aggregate</b>    batched, conservative                ~ 3-6k output tok/s per GPU
+<b>worker demand</b> 75% of agent-hours, ~30% duty      ~ 1-2.7B output tok/mo
+<b>hardware</b>     1-2 x H200 or B200                   ~ $3-6k/mo
+<b>seats</b>        50 x $100                            = $5k/mo</pre>
+                <p>
+                    In the planner/worker split, the 27B does 75% of agent-hours
+                    and K3 (or hosted Qwen3.8-Max at $2/$0.25/$6) does the 25%
+                    that needs a bigger model.
+                </p>
+                <p class="caveat">
+                    The vendor claims 27B beats Qwen3.7-Plus on real-world
+                    coding. No SWE-bench table has been published. It is being
+                    tested against qwen3.6-27b on real delegated briefs before
+                    any routing changes.
+                </p>
+            </section>
+
+            <section>
+                <h2>Encrypted per-key cache</h2>
+                <p>
+                    Prefix-cache hashes are salted per tenant, so one member's
+                    cached prompt cannot be hit or timing-probed by another
+                    member's request. Disk-tier KV blobs are encrypted under a
+                    key derived from the member's API key. Revoke the key and
+                    the blobs are unreadable. Pre-load your codebase once and
+                    reuse it across sessions.
+                </p>
+                <p class="note">
+                    This protects members from each other. Analytics record
+                    counts, token totals, latency, and cache-hit ratio.
+                </p>
+            </section>
+
+            <section>
+                <h2>TBD</h2>
+                <p>
+                    The real reserved price for an 8xB300 node. Aggregate
+                    tokens/second at 200-500 concurrent requests on Blackwell.
+                    KDA-state offload under load. Contention under many
+                    simultaneous evictions. Currently planning a concurrency
+                    sweep at 50, 100, 200, 300, and 500, and the published slot
+                    count is that cap divided by 50.
+                </p>
+            </section>
+
+            <footer>
+                <span>Apache-2.0. Numbers dated 2026-08-23.</span>
+                <a class="bracket" href="https://github.com/tabehodai/hodai"
+                    >github.com/tabehodai/hodai</a
+                >
+            </footer>
+        </main>
+    </body>
 </html>
